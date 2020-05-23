@@ -1,0 +1,12 @@
+{
+    "name": "cyril/mongo",
+    "require": {
+        "mongodb/mongodb": "^1.6"
+    },
+    "authors": [
+        {
+            "name": "cyrillelamal",
+            "email": "cyrillekossyguine@outlook.fr"
+        }
+    ]
+}
