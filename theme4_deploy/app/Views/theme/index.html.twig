@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <h1>Homepage</h1>
+    {{ user.role }}
+    <form action="{{ route('theme_create') }}" method="post">
+        <input type="text" name="name">
+        <input type="text" name="slug">
+        <input type="submit" value="Create theme">
+    </form>
+{% endblock %}
