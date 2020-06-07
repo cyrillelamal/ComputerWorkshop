@@ -16,35 +16,34 @@ $router->get('/', [
 ]);
 
 $router->group(['prefix' => 'theme'], function () use ($router) {
-    $router->post('/create', [
-        'middleware' => 'auth',
-        'as' => 'theme_create', 'uses' => 'ThemeController@create'
-    ]);
+    $router->group(['middleware' => 'auth'], function () use ($router) {
+        $router->post('/create', [
+            'as' => 'theme_create', 'uses' => 'ThemeController@create'
+        ]);
+        $router->delete('/delete/{themeSlug}', [
+            'as' => 'theme_delete', 'uses' => 'ThemeController@delete'
+        ]);
+
+    });
     $router->get('/{themeSlug}', [
         'as' => 'theme_detail', 'uses' => 'ThemeController@read'
-    ]);
-    $router->put('/{themeSlug}', [
-        'middleware' => 'auth',
-        'as' => 'theme_update', 'uses' => 'ThemeController@update'
-    ]);
-    $router->delete('/{themeSlug}', [
-        'middleware' => 'auth',
-        'as' => 'theme_delete', 'uses' => 'ThemeController@delete'
     ]);
 });
 
 $router->group(['prefix' => 'article'], function () use ($router) {
-    $router->post('/{themeSlug}/{articleSlug}', [
-        'middleware' => 'auth',
-        'as' => 'article_create', 'uses' => 'ThemeController@create'
-    ]);
-    $router->put('/{themeSlug}/{articleSlug}', [
-        'middleware' => 'auth',
-        'as' => 'article_detail', 'uses' => 'ArticleController@read'
-    ]);
-    $router->delete('/{themeSlug}/{articleSlug}', [
-        'middleware' => 'auth',
-        'as' => 'article_delete', 'uses' => 'ArticleController@delete'
+    $router->group(['middleware' => 'auth'], function () use ($router) {
+        $router->post('/{themeSlug}/create', [
+            'as' => 'article_create', 'uses' => 'ArticleController@create'
+        ]);
+        $router->put('/{themeSlug}/update/{articleSlug}', [
+            'as' => 'article_update', 'uses' => 'ArticleController@update'
+        ]);
+        $router->delete('/{themeSlug}/delete/{articleSlug}', [
+            'as' => 'article_delete', 'uses' => 'ArticleController@delete'
+        ]);
+    });
+    $router->get('/{themeSlug}/{articleSlug}', [
+       'as' => 'article_detail', 'uses' => 'ArticleController@read'
     ]);
 });
 

@@ -7,10 +7,22 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
+use Twig\Environment;
 
 class Handler extends ExceptionHandler
 {
+    /**
+     * @var Environment
+     */
+    private $twig;
+
+    public function __construct(Environment $twig)
+    {
+        $this->twig = $twig;
+    }
+
     /**
      * A list of the exception types that should not be reported.
      *
@@ -49,6 +61,9 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
+        if ($exception instanceof NotFoundHttpException) {
+            return response($this->twig->render('404.html.twig'));
+        }
         return parent::render($request, $exception);
     }
 }

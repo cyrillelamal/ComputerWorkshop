@@ -1,10 +1,26 @@
 {% extends 'base.html.twig' %}
 {% block body %}
     <h1>Homepage</h1>
-    {{ user.role }}
-    <form action="{{ route('theme_create') }}" method="post">
-        <input type="text" name="name">
-        <input type="text" name="slug">
-        <input type="submit" value="Create theme">
+
+    {% if user %}
+    <form class="theme" action="{{ route('theme_create') }}" method="post">
+        <input type="text" name="theme-name">
+        <input type="text" name="theme-slug">
+        <input class="create" type="submit" value="Create theme">
     </form>
+    {% endif %}
+    {% for theme in theme_list %}
+        <div>
+            <p>
+                <a href="{{ route('theme_detail', {'themeSlug': theme.slug}) }}">{{ theme.name }}</a>
+            </p>
+            {% if user %}
+                <p>
+                    <a class="delete" href="{{ route('theme_delete', {'themeSlug': theme.slug}) }}">{{ theme.name }} delete</a>
+                </p>
+            {% endif %}
+        </div>
+        <hr>
+    {% endfor %}
+
 {% endblock %}

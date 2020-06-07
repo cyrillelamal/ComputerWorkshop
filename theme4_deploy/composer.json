@@ -6,6 +6,7 @@
     "type": "project",
     "require": {
         "php": "^7.2.5",
+        "cocur/slugify": "^4.0",
         "laravel/lumen-framework": "^7.0",
         "mongodb/mongodb": "^1.6",
         "twig/twig": "^3.0"

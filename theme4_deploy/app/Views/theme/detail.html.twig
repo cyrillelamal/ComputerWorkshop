@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ theme.name }}{% endblock %}
+{% block body %}
+
+    <h1>Theme - {{ theme.slug }}</h1>
+
+    {% if user %}
+    <form action="{{ route('article_create', {'themeSlug': theme.slug }) }}" method="post">
+        <input type="text" placeholder="title" name="title">
+        <input type="text" placeholder="body" name="body">
+        <input type="text" placeholder="slug" name="slug">
+        <input type="submit" value="Create article">
+    </form>
+    {% endif %}
+
+    {% for article in article_list %}
+        <div class="article">
+            <a href="{{ route('article_detail', {'themeSlug': theme.slug, 'articleSlug': article.slug}) }}">
+                {{ article.title }}
+            </a>
+            <hr>
+            <a class="delete" href="{{ route('article_delete', {'themeSlug': theme.slug, 'articleSlug': article.slug}) }}">
+                delete
+            </a>
+            <p>{{ article.body }}</p>
+        </div>
+    {% endfor %}
+
+{% endblock %}

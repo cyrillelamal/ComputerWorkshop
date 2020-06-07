@@ -3,9 +3,7 @@
 namespace App\Providers;
 
 use App\Http\Controllers\SecurityController;
-use App\User;
 use Illuminate\Auth\GenericUser;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider

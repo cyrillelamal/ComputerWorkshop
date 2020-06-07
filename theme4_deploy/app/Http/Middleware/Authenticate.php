@@ -46,6 +46,7 @@ class Authenticate
         }
 
         $this->twig->addGlobal('user', $request->user());
+        // here the user is in globals with role, etc.
 
         return $next($request);
     }

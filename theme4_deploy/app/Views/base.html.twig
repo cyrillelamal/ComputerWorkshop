@@ -6,5 +6,10 @@
 </head>
 <body>
     {% block body %}{% endblock %}
+    {% if user %}
+        {# users can get access to JSapp but without token #}
+        <span id="jsToken" style="display: none">{{ js_token }}</span>
+        <script src="{{ js_app }}"></script>
+    {% endif %}
 </body>
 </html>
