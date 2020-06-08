@@ -60,20 +60,14 @@ class ThemeController extends Controller
 
         $apiToken = $request->cookie(SecurityController::COOKIE_NAME, null);
 
-        $jsToken = null;
-        $jsApp = null;
-
-        if (null !== $apiToken && password_verify(env('APP_PASSWORD'), $apiToken)) {
-            // user is authorized
-            // and tries to pass as authorized
-            $jsToken = $apiToken;
-            $jsApp = url('app.js');
-        }
+        $jsToken = null !== $apiToken && password_verify(env('APP_PASSWORD'), $apiToken)
+                ? $jsToken = $apiToken
+                : null
+        ;
 
         return $this->twig->render('theme/index.html.twig', [
             'theme_list' => $themes,
             'js_token' => $jsToken,
-            'js_app' => $jsApp,
             'user' => $request->user()
         ]);
     }

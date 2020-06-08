@@ -120,7 +120,7 @@ class ArticleController extends Controller
      * @throws RuntimeError
      * @throws SyntaxError
      */
-    public function read($themeSlug, $articleSlug)
+    public function read($themeSlug, $articleSlug, Request $request)
     {
         $theme = $this->getCollection()->findOne([
             'slug' => $themeSlug,
@@ -138,9 +138,28 @@ class ArticleController extends Controller
             throw new NotFoundHttpException();
         }
 
+        $user = \request()->user();
+
+        $useWYSIWYG = \request()->user()
+            ? true
+            : false
+        ;
+        $this->twig->addGlobal('user', $user);
+
+        $apiToken = $request->cookie(SecurityController::COOKIE_NAME, null);
+
+        $jsToken = null !== $apiToken && password_verify(env('APP_PASSWORD'), $apiToken)
+            ? $jsToken = $apiToken
+            : null
+        ;
+
         return $this->twig->render('article/detail.html.twig', [
             'article' => $article,
-            'theme' => $theme
+            'theme' => $theme,
+            'use_WYSIWYG' => $useWYSIWYG,
+            'js_token' => $jsToken,
+            'old_title' => $article['title'],
+            'old_body' => $article['body']
         ]);
     }
 

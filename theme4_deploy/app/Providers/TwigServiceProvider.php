@@ -22,6 +22,11 @@ class TwigServiceProvider extends ServiceProvider
         $twig->addFunction(new TwigFunction('route', [$this, 'generateRoute']));
         $twig->addGlobal('user', null);
 
+        $twig->addGlobal('minislate_css', url('minislate/css/minislate-full.min.css'));
+        $twig->addGlobal('minislate_app', url('minislate/js/minislate.js'));
+
+        $twig->addGlobal('js_app', url('app.js'));
+
         $this->app->instance(Environment::class, $twig);
     }
 

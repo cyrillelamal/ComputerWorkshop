@@ -15,6 +15,10 @@ const appendTheme = (e, res) => {
     console.log(e, res) // TODO: paren nodes after front
 }
 
+const removeArticle = (e, res) => {
+
+}
+
 // // delete buttons
 // document.querySelectorAll('a.delete').forEach(el => {
 //     el.addEventListener('click', e => {
@@ -61,18 +65,32 @@ const appendTheme = (e, res) => {
 //
 // } catch (e) {}
 
-// article delete
-document.querySelectorAll('div.article a.delete').forEach(el => {
-    el.addEventListener('click', e => {
-        e.preventDefault()
+if (TOKEN) {
+    // article delete
+    document.querySelectorAll('div.app-article a.app-delete').forEach(el => {
+        el.addEventListener('click', e => {
+            e.preventDefault()
+            const el = e.target
 
-        const el = e.target
+            const addr = el.getAttribute('href')
 
-        const addr = el.getAttribute('href')
-
-        fetch(addr, {method: 'DELETE'})
-            .then(res => res.json())
-            .then(res => console.log(res)) // TODO: remove the block
+            fetch(addr, {method: 'DELETE'})
+                .then(res => res.json())
+                .then(res => removeArticle(e, res)) // TODO: remove the block
+        })
     })
-})
+
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+    const elements = document.querySelectorAll('.editable')
+
+    if (null !== elements) {
+        elements.forEach(el => new Minislate.simpleEditor(el))
+        elements.forEach(el => {
+            el.addEventListener('input', e => document.getElementById('body').textContent = e.target.textContent)
+        })
+    }
+});
+//
 

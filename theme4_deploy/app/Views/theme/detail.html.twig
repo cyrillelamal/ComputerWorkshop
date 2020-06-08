@@ -1,29 +1,89 @@
 {% extends 'base.html.twig' %}
-{% block title %}{{ theme.name }}{% endblock %}
+{% block title %}
+    {{ theme.name }}
+{% endblock %}
 {% block body %}
+<main>
 
-    <h1>Theme - {{ theme.slug }}</h1>
+    <section class="hero is-primary is-bold">
+        <div class="hero-body">
+            <div class="container">
+                <h1 class="title">
+                    {{ theme.name }}
+                </h1>
+            </div>
+        </div>
+    </section>
+
 
     {% if user %}
-    <form action="{{ route('article_create', {'themeSlug': theme.slug }) }}" method="post">
-        <input type="text" placeholder="title" name="title">
-        <input type="text" placeholder="body" name="body">
-        <input type="text" placeholder="slug" name="slug">
-        <input type="submit" value="Create article">
-    </form>
+        <section class="section">
+            <div class="container">
+                <form action="{{ route('article_create', {'themeSlug': theme.slug }) }}" method="post">
+                    <div class="field">
+                        <label for="title" class="label">
+                            Le titre
+                        </label>
+                        <div class="control">
+                            <input id="title" name="title" type="text" placeholder="Le titre" class="input" required>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="body" class="label">
+                            Le corps
+                        </label>
+                        <div class="control">
+                            <textarea name="body" id="body" placeholder="Le corps" class="textarea" required></textarea>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="slug" class="label">
+                            La limace
+                        </label>
+                        <div class="control">
+                            <input id="slug" name="slug" type="text" placeholder="La limace" class="input" required>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="control">
+                            <button class="button is-success" type="submit">Créer l'article</button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </section>
     {% endif %}
 
-    {% for article in article_list %}
-        <div class="article">
-            <a href="{{ route('article_detail', {'themeSlug': theme.slug, 'articleSlug': article.slug}) }}">
-                {{ article.title }}
-            </a>
-            <hr>
-            <a class="delete" href="{{ route('article_delete', {'themeSlug': theme.slug, 'articleSlug': article.slug}) }}">
-                delete
-            </a>
-            <p>{{ article.body }}</p>
+
+    <section class="section">
+        <div class="container">
+            {% for article in article_list %}
+                <div class="card app-article my-4">
+                    <header class="card-header">
+                        <p class="card-header-title">
+                            {{ article.title }}
+                        </p>
+                    </header>
+{#                    <div class="card-content">#}
+{#                        <div class="content">#}
+{#                            {{ article.body | raw }}#}
+{#                        </div>#}
+{#                    </div>#}
+                    <footer class="card-footer">
+                        <a href="{{ route('article_detail', {'themeSlug': theme.slug, 'articleSlug': article.slug}) }}" class="card-footer-item">
+                            Visiter
+                        </a>
+                        {% if user %}
+                            <a href="{{ route('article_delete', {'themeSlug': theme.slug, 'articleSlug': article.slug}) }}" class="card-footer-item app-delete">
+                                Supprimer
+                            </a>
+                        {% endif %}
+                    </footer>
+                </div>
+            {% endfor %}
         </div>
-    {% endfor %}
+    </section>
+</main>
 
 {% endblock %}

@@ -1,26 +1,73 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <h1>Homepage</h1>
+
+    <section class="hero is-primary is-medium">
+        <div class="hero-body">
+            <div class="container">
+                <h1 class="title">
+                    УЕБ проектирование
+                </h1>
+                <h2 class="subtitle">
+                    Все начинается с компьютерного практикума.
+                </h2>
+            </div>
+        </div>
+    </section>
+
 
     {% if user %}
-    <form class="theme" action="{{ route('theme_create') }}" method="post">
-        <input type="text" name="theme-name">
-        <input type="text" name="theme-slug">
-        <input class="create" type="submit" value="Create theme">
-    </form>
+        <section class="section">
+            <div class="container">
+                <form action="{{ route('theme_create') }}" method="post">
+                    <div class="field">
+                        <label for="theme-name" class="label">
+                            Le nom du thème
+                        </label>
+                        <input id="theme-name" type="text" name="theme-name" class="input">
+                    </div>
+                    <div class="field">
+                        <label for="theme-slug" class="label">
+                            La limace du thème
+                        </label>
+                        <input id="theme-slug" type="text" name="theme-slug" class="input">
+                    </div>
+                    <div class="field">
+                        <div class="control">
+                            <button class="button is-success" type="submit">
+                                Créer le thème
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
     {% endif %}
-    {% for theme in theme_list %}
-        <div>
-            <p>
-                <a href="{{ route('theme_detail', {'themeSlug': theme.slug}) }}">{{ theme.name }}</a>
-            </p>
-            {% if user %}
-                <p>
-                    <a class="delete" href="{{ route('theme_delete', {'themeSlug': theme.slug}) }}">{{ theme.name }} delete</a>
-                </p>
-            {% endif %}
+
+    <section class="section">
+        <div class="container">
+            {% for theme in theme_list %}
+                <div class="card theme my-5">
+                    <div class="card-content">
+                        {{ theme.name }}
+                    </div>
+                    <footer class="card-footer">
+                        <p class="card-footer-item">
+                            <a href="{{ route('theme_detail', {'themeSlug': theme.slug}) }}">
+                                Ознакомиться
+                            </a>
+                        </p>
+                        {% if user %}
+                            <p class="card-footer-item">
+                                <a class="app-delete" href="{{ route('theme_delete', {'themeSlug': theme.slug}) }}">
+                                    supprimer
+                                </a>
+                            </p>
+                        {% endif %}
+
+                    </footer>
+                </div>
+            {% endfor %}
         </div>
-        <hr>
-    {% endfor %}
+    </section>
 
 {% endblock %}

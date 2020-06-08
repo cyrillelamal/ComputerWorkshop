@@ -1,15 +1,68 @@
 {% extends 'base.html.twig' %}
 
+{% block additional_style %}
+    {% if use_WYSIWYG %}
+        <link rel="stylesheet" href="{{ minislate_css | raw }}">
+    {% endif %}
+{% endblock %}
+
+
+{% block nav_items %}
+    <a class="navbar-item" href="{{ route('theme_detail', {'themeSlug': theme.slug}) }}">
+        Назад к {{ theme.name }}
+    </a>
+{% endblock %}
+
+
 {% block body %}
-    <h1>{{ article.title }}</h1>
-    <pre>
-        {{ article.body }}
-    </pre>
-    <div>
-        <form action="{{ route('article_update', {'themeSlug': theme.slug, 'articleSlug': article.slug}) }}" method="post">
-            <input type="text" name="title" placeholder="title">
-            <input type="text" name="body" placeholder="body">
-            <input type="submit" value="Update">
-        </form>
-    </div>
+
+    <section class="hero is-primary">
+        <div class="hero-body">
+            <div class="container">
+                <h1 class="title">
+                    {{ article.title | raw }}
+                </h1>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div class="content">
+                {{ article.body | raw }}
+            </div>
+        </div>
+    </section>
+
+    {% if user %}
+        <section class="section">
+            <div class="container">
+                <form action="{{ route('article_update', {'themeSlug': theme.slug, 'articleSlug': article.slug}) }}" method="post">
+                    <div class="field">
+                        <label for="title" class="label">Le nouveau titre</label>
+                        <div class="control">
+                            <input id="title" type="text" name="title" placeholder="Le nouveau titre" class="input" required>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="body" class="label">Le nouveau corps</label>
+                        <div class="control">
+                            <div class="textarea editable"></div>
+                        </div>
+                        <textarea name="body" id="body" style="display: none"></textarea>
+                    </div>
+                    <div class="field">
+                        <div class="control">
+                            <button class="button is-link">Modifier</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+    {% endif %}
+
+    {% if use_WYSIWYG %}
+        <script src="{{ minislate_app | raw }}"></script>
+    {% endif %}
+
 {% endblock %}
