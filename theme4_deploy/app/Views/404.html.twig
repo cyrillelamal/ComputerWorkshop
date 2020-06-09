@@ -1,10 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<h1>404 custom</h1>
-</body>
-</html>
+{% extends 'base.html.twig' %}
+{% block body %}
+<section class="hero is-danger is-fullheight-with-navbar">
+    <div class="hero-body">
+        <div class="container">
+            <p class="title">
+                Ресурс не найден
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}

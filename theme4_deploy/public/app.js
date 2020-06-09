@@ -5,20 +5,6 @@ const loadToken = () => {
         : null
 }
 
-
-// const wsiwygLoader = () => {
-//     const elements = document.querySelectorAll('app-editable')
-//
-//     if (null !== elements) {
-//         elements.forEach(el => {
-//             // init editor
-//             new Minislate.simpleEditor(el)
-//             // copy to the real textarea
-//             el.addEventListener('input', evt => document.getElementById('body').textContent = evt.target.textContent)
-//         })
-//     }
-// }
-
 /**
  * Send request and delete the theme node.
  * @param evt

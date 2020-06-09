@@ -1,0 +1,19 @@
+<div class="card my-5 app-theme">
+    <div class="card-content app-theme-name">
+        {{ theme.name | raw }}
+    </div>
+    <footer class="card-footer">
+        <p class="card-footer-item">
+            <a class="app-detail" href="{{ route('theme_detail', {'themeSlug': theme.slug}) }}">
+                Ознакомиться
+            </a>
+        </p>
+        {% if user %}
+        <p class="card-footer-item">
+            <a class="app-delete" href="{{ route('theme_delete', {'themeSlug': theme.slug}) }}">
+                Supprimer
+            </a>
+        </p>
+        {% endif %}
+    </footer>
+</div>

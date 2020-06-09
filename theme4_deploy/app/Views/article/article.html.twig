@@ -1,0 +1,17 @@
+<div class="card my-4 app-article">
+    <header class="card-header">
+        <p class="card-header-title app-title">
+            {{ article.title | raw }}
+        </p>
+    </header>
+    <footer class="card-footer">
+        <a href="{{ route('article_detail', {'themeSlug': theme.slug, 'articleSlug': article.slug}) }}" class="card-footer-item app-detail">
+            Visiter
+        </a>
+        {% if user %}
+            <a href="{{ route('article_delete', {'themeSlug': theme.slug, 'articleSlug': article.slug}) }}" class="card-footer-item app-delete">
+                Supprimer
+            </a>
+        {% endif %}
+    </footer>
+</div>
