@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-
+<main>
     <section class="hero is-primary is-medium">
         <div class="hero-body">
             <div class="container">
@@ -14,11 +14,10 @@
         </div>
     </section>
 
-
     {% if user %}
         <section class="section">
             <div class="container">
-                <form action="{{ route('theme_create') }}" method="post">
+                <form class="app-create-theme" action="{{ route('theme_create') }}" method="post">
                     <div class="field">
                         <label for="theme-name" class="label">
                             Le nom du thème
@@ -43,31 +42,17 @@
         </section>
     {% endif %}
 
-    <section class="section">
-        <div class="container">
-            {% for theme in theme_list %}
-                <div class="card theme my-5">
-                    <div class="card-content">
-                        {{ theme.name }}
-                    </div>
-                    <footer class="card-footer">
-                        <p class="card-footer-item">
-                            <a href="{{ route('theme_detail', {'themeSlug': theme.slug}) }}">
-                                Ознакомиться
-                            </a>
-                        </p>
-                        {% if user %}
-                            <p class="card-footer-item">
-                                <a class="app-delete" href="{{ route('theme_delete', {'themeSlug': theme.slug}) }}">
-                                    supprimer
-                                </a>
-                            </p>
-                        {% endif %}
+    <div class="app-theme-template" style="display: none">
+        {% include 'theme/theme.html.twig' %}
+    </div>
 
-                    </footer>
-                </div>
+    <section class="section">
+        <div class="container app-themes">
+            {% for theme in theme_list %}
+                {% include 'theme/theme.html.twig' %}
             {% endfor %}
         </div>
     </section>
 
+</main>
 {% endblock %}

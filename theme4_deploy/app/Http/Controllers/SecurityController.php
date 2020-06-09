@@ -29,7 +29,7 @@ class SecurityController extends Controller
 
 
     /**
-     * Generate login view or authenticate.
+     * Generate login view or authenticate with cookie.
      *
      * @param Request $request
      * @param Response $response
@@ -57,11 +57,10 @@ class SecurityController extends Controller
             }
         }
 
-        $response
+        /** @noinspection PhpTemplateMissingInspection */
+        return $response
             ->setContent($this->twig->render('security/login.html.twig', ['errors' => $err]))
         ;
-
-        return $response;
     }
 
     /**

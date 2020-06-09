@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUndefinedVariableInspection */
 
 /*
 |--------------------------------------------------------------------------
@@ -35,7 +35,7 @@ $router->group(['prefix' => 'article'], function () use ($router) {
         $router->post('/{themeSlug}/create', [
             'as' => 'article_create', 'uses' => 'ArticleController@create'
         ]);
-        $router->put('/{themeSlug}/update/{articleSlug}', [
+        $router->post('/{themeSlug}/update/{articleSlug}', [
             'as' => 'article_update', 'uses' => 'ArticleController@update'
         ]);
         $router->delete('/{themeSlug}/delete/{articleSlug}', [

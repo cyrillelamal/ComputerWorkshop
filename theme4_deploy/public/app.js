@@ -5,92 +5,196 @@ const loadToken = () => {
         : null
 }
 
+
+// const wsiwygLoader = () => {
+//     const elements = document.querySelectorAll('app-editable')
+//
+//     if (null !== elements) {
+//         elements.forEach(el => {
+//             // init editor
+//             new Minislate.simpleEditor(el)
+//             // copy to the real textarea
+//             el.addEventListener('input', evt => document.getElementById('body').textContent = evt.target.textContent)
+//         })
+//     }
+// }
+
+/**
+ * Send request and delete the theme node.
+ * @param evt
+ * @param themeContainer
+ */
+const deleteTheme = (evt, themeContainer) => {
+    evt.preventDefault()
+
+    fetch(evt.target.getAttribute('href'), {method: 'DELETE'})
+        .then(r => r.json())
+        .then(r => {
+            const {delCount} = r
+
+            if (delCount) {
+                // removed successfully
+                themeContainer.parentNode.removeChild(themeContainer)
+            } else {
+                console.log('API changed (delete)')
+            }
+
+            deleteThemeLoader()
+        }).catch(reason => console.log(reason))
+}
+
+/**
+ * Delete theme buttons (on index)
+ */
+const deleteThemeLoader = () => {
+    (document.querySelectorAll('div.app-theme') || []).forEach(themeContainer => {
+        themeContainer.querySelector('a.app-delete')
+            .addEventListener('click', evt => deleteTheme(evt, themeContainer))
+    })
+}
+
+const createTheme = (evt, formContainer) => {
+    // submit form handler
+    evt.preventDefault()
+
+    const themeNameInput = formContainer.querySelector('input[name="theme-name"]')
+    const themeSlugInput = formContainer.querySelector('input[name="theme-slug"]')
+
+    const requestBody = {
+        themeName: themeNameInput.value,
+        themeSlug: themeSlugInput.value
+    }
+
+    fetch(formContainer.getAttribute('action'), {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+    })
+        .then(r => r.json())
+        .then(r => {
+            const {name, themeDetailLink, themeDeleteLink} = r
+
+            // empty template
+            const themeNode = document.querySelector('div.app-theme-template')
+                .cloneNode(true).querySelector('div.app-theme')
+
+            // theme name
+            const themeNameContainer = themeNode.querySelector('div.app-theme-name')
+            // theme detail link
+            const themeDetailNode = themeNode.querySelector('a.app-detail')
+            // theme delete link
+            const themeDeleteNode = themeNode.querySelector('a.app-delete')
+
+            themeNameContainer.textContent = name
+            themeDetailNode.setAttribute('href', themeDetailLink)
+            themeDeleteNode.setAttribute('href', themeDeleteLink)
+
+            // list of themes
+            document.querySelector('div.app-themes').appendChild(themeNode)
+
+            deleteThemeLoader()
+        }).catch(reason => console.log(reason))
+}
+
+/**
+ * Create theme button (on index)
+ */
+const createThemeLoader = () => {
+    const formContainer = document.querySelector('form.app-create-theme')
+
+    if (formContainer) {
+        formContainer.querySelector('button[type="submit"]')
+            .addEventListener('click', evt => createTheme(evt, formContainer,))
+    }
+}
+
+const createArticle = (evt, formContainer) => {
+    evt.preventDefault()
+
+    const title = formContainer.querySelector('input[name="title"]').value
+    const body = formContainer.querySelector('textarea[name="body"]').value
+    const slug = formContainer.querySelector('input[name="slug"]').value
+
+    const requestBody = {
+        title: title,
+        body: body,
+        slug: slug
+    }
+
+    fetch(formContainer.getAttribute('action'), {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+    })
+        .then(r => r.json())
+        .then(r => {
+            const { articleDetailLink, articleDeleteLink, title } = r
+
+            if (articleDetailLink && articleDeleteLink && title) {
+                const articleNode = document.querySelector('div.app-article-template')
+                    .cloneNode(true).querySelector('div.app-article')
+
+                articleNode.querySelector('p.app-title').textContent = title
+
+                articleNode.querySelector('a.app-detail').setAttribute('href', articleDetailLink)
+                articleNode.querySelector('a.app-delete').setAttribute('href', articleDeleteLink)
+
+                const articlesContainer = document.querySelector('div.app-articles')
+                articlesContainer.appendChild(articleNode)
+            }
+
+            deleteArticleLoader()
+        })
+        .catch(reason => console.log(reason))
+}
+
+const createArticleLoader = () => {
+    const formContainer = document.querySelector('form.app-create-article')
+
+    if (formContainer) {
+        formContainer.querySelector('button[type="submit"')
+            .addEventListener('click', evt => createArticle(evt, formContainer))
+    }
+}
+
+const deleteArticle = (evt, articleContainer) => {
+    evt.preventDefault()
+
+    fetch(evt.target.getAttribute('href'), {method: 'DELETE'})
+        .then(r => r.json())
+        .then(r => {
+            const { msg, err } = r
+
+            if (msg && !err) {
+                articleContainer.parentNode.removeChild(articleContainer)
+            }
+
+            deleteArticleLoader()
+        })
+        .catch(reason => console.log(reason))
+}
+
+const deleteArticleLoader = () => {
+    document.querySelectorAll('div.app-article' || []).forEach(articleContainer => {
+        articleContainer.querySelector('a.app-delete')
+            .addEventListener('click', evt => deleteArticle(evt, articleContainer))
+    })
+}
+
+// main
 const TOKEN = loadToken()
 
-const removeTheme = (e, res) => {
-    console.log(e, res) // TODO: paren nodes after front
-}
-
-const appendTheme = (e, res) => {
-    console.log(e, res) // TODO: paren nodes after front
-}
-
-const removeArticle = (e, res) => {
-
-}
-
-// // delete buttons
-// document.querySelectorAll('a.delete').forEach(el => {
-//     el.addEventListener('click', e => {
-//         e.preventDefault()
-//
-//         const el = e.target
-//
-//         if (TOKEN) {
-//             fetch(el.getAttribute('href'), {method: 'DELETE'})
-//                 .then(res => res.json())
-//                 .then(res => removeTheme(e, res))
-//         } else {
-//             console.log('Tu te crois malin ?')
-//         }
-//     })
-// })
-//
-// // input form
-// try {
-//     document.querySelector('input.create').addEventListener('click', e => {
-//         e.preventDefault()
-//
-//         const el = e.target
-//
-//         const form = el.parentNode
-//         const addr = form.getAttribute('action')
-//
-//         const themeName = form.querySelector('[name="theme-name"]').value
-//         const themeSlug = form.querySelector('[name="theme-slug"]').value
-//
-//         fetch(addr, {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json'
-//             },
-//             body: JSON.stringify({
-//                 'theme-name': themeName,
-//                 'theme-slug': themeSlug
-//             })
-//         })
-//             .then(res => res.json())
-//             .then(res => appendTheme(e, res))
-//     })
-//
-// } catch (e) {}
-
-if (TOKEN) {
-    // article delete
-    document.querySelectorAll('div.app-article a.app-delete').forEach(el => {
-        el.addEventListener('click', e => {
-            e.preventDefault()
-            const el = e.target
-
-            const addr = el.getAttribute('href')
-
-            fetch(addr, {method: 'DELETE'})
-                .then(res => res.json())
-                .then(res => removeArticle(e, res)) // TODO: remove the block
-        })
-    })
-
-}
-
-window.addEventListener('DOMContentLoaded', function() {
-    const elements = document.querySelectorAll('.editable')
-
-    if (null !== elements) {
-        elements.forEach(el => new Minislate.simpleEditor(el))
-        elements.forEach(el => {
-            el.addEventListener('input', e => document.getElementById('body').textContent = e.target.textContent)
-        })
+window.addEventListener('DOMContentLoaded', () => {
+    if (TOKEN) {
+        createThemeLoader()
+        deleteThemeLoader()
+        createArticleLoader()
+        deleteArticleLoader()
     }
-});
-//
-
+})

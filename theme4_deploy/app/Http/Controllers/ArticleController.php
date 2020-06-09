@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpTemplateMissingInspection */
 
 
 namespace App\Http\Controllers;
@@ -6,7 +6,9 @@ namespace App\Http\Controllers;
 
 use Cocur\Slugify\Slugify;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Laravel\Lumen\Http\Redirector;
 use Laravel\Lumen\Routing\Controller;
 use MongoDB\Client;
 use MongoDB\Collection;
@@ -47,7 +49,7 @@ class ArticleController extends Controller
     }
 
     /**
-     * Create article
+     * REST. Create a new article.
      *
      * @param $themeSlug
      * @param Request $request
@@ -95,7 +97,13 @@ class ArticleController extends Controller
                         ['slug' => $themeSlug],
                         ['$set' => ["articles.$articleSlug" => $article]]
                     );
+                    $articleProps = [
+                        'themeSlug' => $themeSlug,
+                        'articleSlug' => $articleSlug
+                    ];
                     $responseData['msg'] = 'Successful';
+                    $responseData['articleDetailLink'] = route('article_detail', $articleProps);
+                    $responseData['articleDeleteLink'] = route('article_delete', $articleProps);
                     $statusCode = Response::HTTP_CREATED;
                 } else {
                     // The unique slug constraints violation.
@@ -107,7 +115,10 @@ class ArticleController extends Controller
             }
         }
 
-        return $response->setStatusCode($statusCode)->setData($responseData);
+        return $response
+            ->setStatusCode($statusCode)
+            ->setData($responseData)
+        ;
     }
 
     /**
@@ -115,6 +126,7 @@ class ArticleController extends Controller
      *
      * @param $themeSlug
      * @param $articleSlug
+     * @param Request $request
      * @return string
      * @throws LoaderError
      * @throws RuntimeError
@@ -138,13 +150,7 @@ class ArticleController extends Controller
             throw new NotFoundHttpException();
         }
 
-        $user = \request()->user();
-
-        $useWYSIWYG = \request()->user()
-            ? true
-            : false
-        ;
-        $this->twig->addGlobal('user', $user);
+        $this->twig->addGlobal('user', $request->user());
 
         $apiToken = $request->cookie(SecurityController::COOKIE_NAME, null);
 
@@ -156,7 +162,6 @@ class ArticleController extends Controller
         return $this->twig->render('article/detail.html.twig', [
             'article' => $article,
             'theme' => $theme,
-            'use_WYSIWYG' => $useWYSIWYG,
             'js_token' => $jsToken,
             'old_title' => $article['title'],
             'old_body' => $article['body']
@@ -164,26 +169,22 @@ class ArticleController extends Controller
     }
 
     /**
-     * Update
+     * REST. Update the article.
      *
      * @param $themeSlug
      * @param $articleSlug
      * @param Request $request
-     * @param JsonResponse $response
-     * @return JsonResponse|\Symfony\Component\HttpFoundation\JsonResponse
+     * @return RedirectResponse|Redirector
      */
-    public function update($themeSlug, $articleSlug, Request $request, JsonResponse $response)
+    public function update($themeSlug, $articleSlug, Request $request)
     {
-        $statusCode = Response::HTTP_BAD_REQUEST;
-        $responseData = [];
-
         $newTitle = $request->input('title');
         $newBody = $request->input('body');
 
         if (null !== $newTitle && null !== $newBody) {
             $collection = $this->getCollection();
 
-            $res = $collection->findOneAndUpdate(
+            $collection->findOneAndUpdate(
                 [
                     'slug' => $themeSlug,
                     "articles.$articleSlug" => ['$exists' => true]
@@ -195,25 +196,14 @@ class ArticleController extends Controller
                     ]
                 ]
             );
-
-            if (null === $res) {
-                $responseData['err'] = "Cannot find such article '$themeSlug'.'$articleSlug'";
-            } else {
-                $statusCode = Response::HTTP_ACCEPTED;
-                $responseData['msg'] = 'Successful';
-            }
-        } else {
-            $responseData['err'] = 'Some fields are not provided';
         }
 
-        return $response
-            ->setStatusCode($statusCode)
-            ->setData($responseData)
-        ;
+        $route = route('article_detail', ['themeSlug' => $themeSlug, 'articleSlug' => $articleSlug]);
+        return redirect($route);
     }
 
     /**
-     * REST. Delete the article object.
+     * REST. Delete the article.
      *
      * @param $themeSlug
      * @param $articleSlug
@@ -222,8 +212,8 @@ class ArticleController extends Controller
      */
     public function delete($themeSlug, $articleSlug, JsonResponse $response)
     {
-        $statusCode = Response::HTTP_OK;
-        $responseData = [];
+        $statusCode = Response::HTTP_ACCEPTED;
+        $data = [];
 
         $key = "articles.$articleSlug";
 
@@ -238,14 +228,14 @@ class ArticleController extends Controller
 
         if (null === $res) {
             $statusCode = Response::HTTP_BAD_REQUEST;
-            $responseData['err'] = "No such article slug '$articleSlug' or no theme with the slug '$themeSlug'";
+            $data['err'] = "No such article slug '$articleSlug' or no theme with the slug '$themeSlug'";
         } else {
-            $responseData['msg'] = 'Successful';
+            $data['msg'] = 'Successful';
         }
 
         return $response
             ->setStatusCode($statusCode)
-            ->setData($responseData)
+            ->setData($data)
         ;
     }
 

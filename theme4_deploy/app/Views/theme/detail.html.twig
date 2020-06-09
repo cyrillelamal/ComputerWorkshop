@@ -9,17 +9,16 @@
         <div class="hero-body">
             <div class="container">
                 <h1 class="title">
-                    {{ theme.name }}
+                    {{ theme.name | raw }}
                 </h1>
             </div>
         </div>
     </section>
 
-
     {% if user %}
         <section class="section">
             <div class="container">
-                <form action="{{ route('article_create', {'themeSlug': theme.slug }) }}" method="post">
+                <form action="{{ route('article_create', {'themeSlug': theme.slug }) }}" method="post" class="app-create-article">
                     <div class="field">
                         <label for="title" class="label">
                             Le titre
@@ -49,41 +48,22 @@
                             <button class="button is-success" type="submit">Créer l'article</button>
                         </div>
                     </div>
-
                 </form>
             </div>
         </section>
     {% endif %}
 
+    <div class="app-article-template" style="display: none">
+        {% include 'article/article.html.twig' %}
+    </div>
 
     <section class="section">
-        <div class="container">
+        <div class="container app-articles">
             {% for article in article_list %}
-                <div class="card app-article my-4">
-                    <header class="card-header">
-                        <p class="card-header-title">
-                            {{ article.title }}
-                        </p>
-                    </header>
-{#                    <div class="card-content">#}
-{#                        <div class="content">#}
-{#                            {{ article.body | raw }}#}
-{#                        </div>#}
-{#                    </div>#}
-                    <footer class="card-footer">
-                        <a href="{{ route('article_detail', {'themeSlug': theme.slug, 'articleSlug': article.slug}) }}" class="card-footer-item">
-                            Visiter
-                        </a>
-                        {% if user %}
-                            <a href="{{ route('article_delete', {'themeSlug': theme.slug, 'articleSlug': article.slug}) }}" class="card-footer-item app-delete">
-                                Supprimer
-                            </a>
-                        {% endif %}
-                    </footer>
-                </div>
+                {% include 'article/article.html.twig' %}
             {% endfor %}
         </div>
     </section>
-</main>
 
+</main>
 {% endblock %}

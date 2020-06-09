@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpTemplateMissingInspection */
 
 
 namespace App\Http\Controllers;
@@ -75,21 +75,25 @@ class ThemeController extends Controller
     /**
      * REST. Create a new theme.
      *
-     * @param Request $request
      * @param JsonResponse $response
      * @return string
      */
-    public function create(Request $request, JsonResponse $response)
+    public function create(JsonResponse $response)
     {
-        // auth middleware!
+        // The form values.
+        $name = request()->input('themeName');
+        $slug = request()->input('themeSlug');
+
         $code = Response::HTTP_CREATED;
-        $data = [];
+        $data = [
+            'name' => $name,
+            'slug' => $slug
+        ];
 
-        $name = $request->input('theme-name');
-        $slug = $request->input('theme-slug');
-
+        // The form validation.
         if ($name && $slug) {
             $slugify = new Slugify();
+
             $slug = $slugify->slugify($slug, '_');
 
             $collection = $this->getCollection();
@@ -98,17 +102,22 @@ class ThemeController extends Controller
 
             if (null === $theme) {
                 $collection->insertOne(['name' => $name, 'slug' => $slug]);
-                $data['msg'] = "Successful";
+
+                $data['msg'] = 'Successful';
+                $data['themeDetailLink'] = route('theme_detail', ['themeSlug' => $slug]);
+                $data['themeDeleteLink'] = route('theme_delete', ['themeSlug' => $slug]);
             } else {
                 $code = Response::HTTP_BAD_REQUEST;
                 $data['err'] = "Slug '$slug' is used already.";
-                $data['slug'] = $slug;
             }
         } else {
             $data['err'] = 'Some fields are not provided';
         }
 
-        return $response->setStatusCode($code)->setData($data);
+        return $response
+            ->setStatusCode($code)
+            ->setData($data)
+        ;
     }
 
     /**
@@ -137,7 +146,6 @@ class ThemeController extends Controller
             $jsToken = $apiToken;
             $jsApp = url('app.js');
         }
-
         if (null !== $theme) {
             $articles = $theme['articles'] ?? [];
 
@@ -164,19 +172,18 @@ class ThemeController extends Controller
      */
     public function delete($themeSlug, JsonResponse $response)
     {
-        // auth middleware!
-        $data = [];
-        $statusCode = Response::HTTP_ACCEPTED;
-
         $delCount = $this->getCollection()->deleteOne(['slug' => $themeSlug])->getDeletedCount();
 
-        $data['delCount'] = $delCount;
+        $statusCode = Response::HTTP_ACCEPTED;
+        $data = [
+            'delCount' => $delCount
+        ];
 
         if ($delCount) {
             $data['msg'] = 'Successful.';
         } else {
-            $data['err'] = "No such slug '$themeSlug'";
             $statusCode = Response::HTTP_BAD_REQUEST;
+            $data['err'] = "No such slug '$themeSlug'";
         }
 
         return $response
