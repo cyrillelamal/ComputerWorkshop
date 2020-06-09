@@ -5,4 +5,4 @@ package-lock.json
 *.db
 
 vendor/
-composer.lock
+*.lock
